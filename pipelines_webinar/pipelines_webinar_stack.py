@@ -20,8 +20,8 @@ class PipelinesWebinarStack(core.Stack):
         handler = lmb.Function(self, 'Handler',
             runtime=lmb.Runtime.PYTHON_3_7,
             handler='handler.handler',
-            # code=lmb.Code.from_asset(path.join(this_dir, 'lambda'))
-            code=lmb.Code.inline(lambda_code)
+            code=lmb.Code.from_asset(path.join(this_dir, 'lambda'))
+            # code=lmb.Code.inline(lambda_code)
         )
 
         alias = lmb.Alias(self, 'HandlerAlias',
