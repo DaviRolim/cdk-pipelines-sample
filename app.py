@@ -2,10 +2,12 @@
 
 from aws_cdk import core
 
+from pipelines_webinar.pipeline_stack import PipelineStack
+
 from pipelines_webinar.pipelines_webinar_stack import PipelinesWebinarStack
 
 
 app = core.App()
-PipelinesWebinarStack(app, "pipelines-webinar")
+PipelineStack(app, "pipelines-webinar", env={'region': 'us-east-2'})
 
 app.synth()
