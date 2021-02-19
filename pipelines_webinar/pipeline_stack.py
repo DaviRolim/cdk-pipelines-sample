@@ -24,16 +24,16 @@ class PipelineStack(core.Stack):
         action_name='GitHub',
         output=source_artifact,
         oauth_token=core.SecretValue.secrets_manager('github-token'),
-        owner='davirolim',
+        owner='DaviRolim',
         repo='cdk-pipelines-sample',
         branch='main',
-        trigger=cpactions.GitHubTrigger.POLL),
+        trigger=cpactions.GitHubTrigger.WEBHOOK),
 
       synth_action=pipelines.SimpleSynthAction(
         source_artifact=source_artifact,
         cloud_assembly_artifact=cloud_assembly_artifact,
         install_command='npm install -g aws-cdk && pip install -r requirements.txt',
-        build_command='pytest unittest',
+        #build_command='pytest unittest',
         synth_command='cdk synth'))
 
     pre_prod_app = WebServiceStage(self, 'Pre-Prod', env={
