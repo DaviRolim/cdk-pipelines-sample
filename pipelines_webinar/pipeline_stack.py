@@ -33,7 +33,7 @@ class PipelineStack(core.Stack):
         source_artifact=source_artifact,
         cloud_assembly_artifact=cloud_assembly_artifact,
         install_command='npm install -g aws-cdk && pip install -r requirements.txt',
-        #build_command='pytest unittest',
+        build_command='pip install pytest',
         synth_command='cdk synth'))
 
     pre_prod_app = WebServiceStage(self, 'Pre-Prod', env={
