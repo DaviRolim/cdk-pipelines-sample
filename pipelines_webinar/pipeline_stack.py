@@ -26,6 +26,7 @@ class PipelineStack(core.Stack):
         oauth_token=core.SecretValue.secrets_manager('github-token'),
         owner='davirolim',
         repo='cdk-pipelines-sample',
+        branch='main',
         trigger=cpactions.GitHubTrigger.POLL),
 
       synth_action=pipelines.SimpleSynthAction(
