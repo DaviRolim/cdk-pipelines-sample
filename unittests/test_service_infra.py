@@ -1,6 +1,6 @@
 
-from aws_cdk import core
-from pipelines_webinar.pipelines_webinar_stack import PipelinesWebinarStack
+# from aws_cdk import core
+# from pipelines_webinar.pipelines_webinar_stack import PipelinesWebinarStack
 
 def test_lambda_handler():
   # GIVEN
