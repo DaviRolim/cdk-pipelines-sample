@@ -15,7 +15,7 @@ class PipelinesWebinarStack(core.Stack):
 
         lambda_code = get_code('handler.py')
         # The code that defines your stack goes here
-        this_dir = path.dirname(__file__)
+        # this_dir = path.dirname(__file__)
 
         handler = lmb.Function(self, 'Handler',
             runtime=lmb.Runtime.PYTHON_3_7,
