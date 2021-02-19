@@ -5,6 +5,7 @@ from aws_cdk import pipelines
 
 from .webservice_stage import WebServiceStage
 
+
 APP_ACCOUNT = '475414269301'
 
 class PipelineStack(core.Stack):

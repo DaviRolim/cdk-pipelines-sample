@@ -6,18 +6,23 @@ import aws_cdk.aws_apigateway as apigw
 import aws_cdk.aws_codedeploy as codedeploy
 import aws_cdk.aws_cloudwatch as cloudwatch
 
+from utils import get_code
+
 class PipelinesWebinarStack(core.Stack):
 
     def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
+        lambda_code = get_code('handler.py')
         # The code that defines your stack goes here
         this_dir = path.dirname(__file__)
 
         handler = lmb.Function(self, 'Handler',
             runtime=lmb.Runtime.PYTHON_3_7,
             handler='handler.handler',
-            code=lmb.Code.from_asset(path.join(this_dir, 'lambda')))
+            # code=lmb.Code.from_asset(path.join(this_dir, 'lambda'))
+            code=lmb.Code.inline(lambda_code)
+        )
 
         alias = lmb.Alias(self, 'HandlerAlias',
             alias_name='Current',
