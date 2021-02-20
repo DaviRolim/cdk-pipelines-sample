@@ -1,7 +1,7 @@
 import os
 
 def get_code(file_name):
-    path = os.getcwd() + '/pipelines_webinar/lambda/'
+    path = os.getcwd() + '/pipelines_webinar/lambda_rep/'
     file_path = path + file_name
     with open(file_path, 'r') as f:
         file_content = f.read()
