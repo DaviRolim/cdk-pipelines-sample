@@ -1,4 +1,4 @@
-attrs==19.3.0
+attrs==20.3.0
 aws-cdk.assets==1.56.0
 aws-cdk.aws-apigateway==1.56.0
 aws-cdk.aws-applicationautoscaling==1.56.0
@@ -17,6 +17,7 @@ aws-cdk.aws-codeguruprofiler==1.56.0
 aws-cdk.aws-codepipeline==1.56.0
 aws-cdk.aws-codepipeline-actions==1.56.0
 aws-cdk.aws-cognito==1.56.0
+aws-cdk.aws-dynamodb==1.56.0
 aws-cdk.aws-ec2==1.56.0
 aws-cdk.aws-ecr==1.56.0
 aws-cdk.aws-ecr-assets==1.56.0
@@ -50,17 +51,18 @@ aws-cdk.custom-resources==1.56.0
 aws-cdk.cx-api==1.56.0
 aws-cdk.pipelines==1.56.0
 aws-cdk.region-info==1.56.0
-cattrs==1.0.0
+cattrs==1.1.2
 certifi==2020.6.20
 chardet==3.0.4
-constructs==3.0.4
+constructs==3.3.29
 idna==2.10
 importlib-metadata==1.7.0
 importlib-resources==3.0.0
 iniconfig==1.0.1
-jsii==1.9.0
+jsii==1.21.0
 more-itertools==8.4.0
 packaging==20.4
+-e git+https://github.com/DaviRolim/cdk-pipelines-sample.git@f35d5a6b8ecabe71b813be9cea24f1d6ca48b56f#egg=pipelines_webinar
 pluggy==0.13.1
 publication==0.0.3
 py==1.9.0

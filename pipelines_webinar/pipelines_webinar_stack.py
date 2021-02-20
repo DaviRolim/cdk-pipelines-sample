@@ -5,6 +5,7 @@ import aws_cdk.aws_lambda as lmb
 import aws_cdk.aws_apigateway as apigw
 import aws_cdk.aws_codedeploy as codedeploy
 import aws_cdk.aws_cloudwatch as cloudwatch
+import aws_cdk.aws_dynamodb as dynamodb
 
 from utils import get_code
 
@@ -12,26 +13,48 @@ class PipelinesWebinarStack(core.Stack):
 
     def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
+        
+        # Dynamo table
+        DYNAMO_TABLE_NAME = 'users'
+        self.table = dynamodb.Table(self, DYNAMO_TABLE_NAME,
+            partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING)
+        )
+            # stream=dynamodb.StreamViewType.NEW_IMAGE
 
-        lambda_code = get_code('handler.py')
         # The code that defines your stack goes here
         # this_dir = path.dirname(__file__)
 
-        handler = lmb.Function(self, 'Handler',
+        self.get_users_fn = lmb.Function(self, 'GetUsers',
             runtime=lmb.Runtime.PYTHON_3_7,
-            # handler='handler.handler',
-            # code=lmb.Code.from_asset(path.join(this_dir, 'lambda_rep'))
             handler='index.handler',
-            code=lmb.Code.inline(lambda_code)
+            code=lmb.Code.inline(get_code('handler.py')),
+            environment={
+                'DYNAMOTABLE': DYNAMO_TABLE_NAME
+            }
+        )
+
+        self.create_user_fn = lmb.Function(self, 'CreateUser',
+            runtime=lmb.Runtime.PYTHON_3_7,
+            handler='index.handler',
+            code=lmb.Code.inline(get_code('create_user.py')),
+            environment={
+                'DYNAMOTABLE': DYNAMO_TABLE_NAME
+            }
         )
 
         alias = lmb.Alias(self, 'HandlerAlias',
             alias_name='Current',
-            version=handler.current_version)
+            version=self.get_users_fn.current_version)
 
-        gw = apigw.LambdaRestApi(self, 'Gateway',
-            description='Endpoint for a simple Lambda-powered web service',
-            handler=alias)
+        gw = apigw.RestApi(self, 'Gateway',
+            description='Endpoint for a simple Lambda-powered web service')
+        
+        user_resource = gw.root.add_resource('users')
+        get_users_api = apigw.LambdaIntegration(self.get_users_fn)
+        user_resource.add_method('GET',  get_users_api)
+        create_user_api = apigw.LambdaIntegration(self.create_user_fn)
+        user_resource.add_method('POST', create_user_api)
+
 
         failure_alarm = cloudwatch.Alarm(self, 'FailureAlarm',
             metric=cloudwatch.Metric(
@@ -47,8 +70,14 @@ class PipelinesWebinarStack(core.Stack):
 
         codedeploy.LambdaDeploymentGroup(self, 'DeploymentGroup',
             alias=alias,
-            deployment_config=codedeploy.LambdaDeploymentConfig.CANARY_10_PERCENT_10_MINUTES,
+            deployment_config=codedeploy.LambdaDeploymentConfig.LINEAR_10_PERCENT_EVERY_1_MINUTE,
             alarms=[failure_alarm])
 
         self.url_output = core.CfnOutput(self, 'Url',
             value=gw.url)
+
+        self.grant_permissions()
+
+    def grant_permissions(self):
+            self.table.grant_read_data(self.get_users_fn)
+            self.table.grant_read_write_data(self.create_user_fn)
