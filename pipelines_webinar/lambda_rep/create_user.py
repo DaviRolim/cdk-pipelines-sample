@@ -3,8 +3,7 @@ import uuid
 import boto3
 import os
 def create_user(user):
-    if not dynamodb:
-        dynamodb = boto3.resource('dynamodb')
+    dynamodb = boto3.resource('dynamodb')
 
     table = dynamodb.Table(os.environ['DYNAMOTABLE'])
     user_id = str(uuid.uuid4())

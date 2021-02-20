@@ -3,8 +3,7 @@ import boto3
 import os
 
 def get_users():
-    if not dynamodb:
-        dynamodb = boto3.resource('dynamodb')
+    dynamodb = boto3.resource('dynamodb')
 
     table = dynamodb.Table(os.environ['DYNAMOTABLE'])
 
