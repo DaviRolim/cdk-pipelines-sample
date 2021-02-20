@@ -1,4 +1,6 @@
 import json
+import boto3
+import os
 
 def get_users():
     if not dynamodb:

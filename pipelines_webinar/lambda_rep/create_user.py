@@ -1,6 +1,7 @@
 import json
 import uuid
 import boto3
+import os
 def create_user(user):
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb')
@@ -11,8 +12,8 @@ def create_user(user):
     response = table.put_item(
         Item={
             "id": user_id,
-            "firstName": user['firstName']
-            "lastName": user['lastName']
+            "firstName": user['firstName'],
+            "lastName": user['lastName'],
             "email": user['email']
         }
     )
