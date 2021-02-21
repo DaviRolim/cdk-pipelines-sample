@@ -16,7 +16,7 @@ class PipelinesWebinarStack(core.Stack):
         
         # Dynamo table
         DYNAMO_TABLE_NAME = 'users'
-        self.table = dynamodb.Table(self, DYNAMO_TABLE_NAME,
+        self.table = dynamodb.Table(self, 'dynamo_table', table_name=DYNAMO_TABLE_NAME,
             partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING)
         )
             # stream=dynamodb.StreamViewType.NEW_IMAGE
@@ -29,7 +29,7 @@ class PipelinesWebinarStack(core.Stack):
             handler='index.handler',
             code=lmb.Code.inline(get_code('handler.py')),
             environment={
-                'DYNAMOTABLE': DYNAMO_TABLE_NAME
+                'DYNAMOTABLE': self.table.table_name
             }
         )
 
@@ -38,9 +38,12 @@ class PipelinesWebinarStack(core.Stack):
             handler='index.handler',
             code=lmb.Code.inline(get_code('create_user.py')),
             environment={
-                'DYNAMOTABLE': DYNAMO_TABLE_NAME
+                'DYNAMOTABLE': self.table.table_name
             }
         )
+
+        self.table.grant_read_write_data(self.get_users_fn)
+        self.table.grant_read_write_data(self.create_user_fn)
 
         alias = lmb.Alias(self, 'HandlerAlias',
             alias_name='Current',
@@ -75,6 +78,3 @@ class PipelinesWebinarStack(core.Stack):
 
         self.url_output = core.CfnOutput(self, 'Url',
             value=gw.url)
-
-        self.table.grant_read_write_data(self.get_users_fn)
-        self.table.grant_read_write_data(self.create_user_fn)
