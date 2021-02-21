@@ -7,21 +7,25 @@ def create_user(user):
 
     table = dynamodb.Table(os.environ['DYNAMOTABLE'])
     user_id = str(uuid.uuid4())
-
-    response = table.put_item(
-        Item={
-            "id": user_id,
-            "firstName": user['firstName'],
-            "lastName": user['lastName'],
-            "email": user['email']
-        }
-    )
+    response = ''
+    try:
+        response = table.put_item(
+            Item={
+                "id": user_id,
+                "firstName": user['firstName'],
+                "lastName": user['lastName'],
+                "email": user['email']
+            }
+        )
+    except Exception as e:
+        print(e)
     return response
     
 def handler(event, context):
     print(event)
-    user = event['body']
-    res = create_user(user)
+    body = json.loads(event['body'])
+    print(body['user'])
+    res = create_user(body['user'])
     print(res)
     headers = {
       'Access-Control-Allow-Origin': '*', # Required for CORS support to workx
