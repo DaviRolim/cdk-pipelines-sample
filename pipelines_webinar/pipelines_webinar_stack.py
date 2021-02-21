@@ -76,8 +76,5 @@ class PipelinesWebinarStack(core.Stack):
         self.url_output = core.CfnOutput(self, 'Url',
             value=gw.url)
 
-        self.grant_permissions()
-
-    def grant_permissions(self):
-            self.table.grant_read_data(self.get_users_fn)
-            self.table.grant_read_write_data(self.create_user_fn)
+        self.table.grant_read_write_data(self.get_users_fn)
+        self.table.grant_read_write_data(self.create_user_fn)
