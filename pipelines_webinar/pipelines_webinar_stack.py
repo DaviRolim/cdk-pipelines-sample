@@ -53,6 +53,10 @@ class PipelinesWebinarStack(core.Stack):
             description='Endpoint for a simple Lambda-powered web service')
         
         user_resource = gw.root.add_resource('users')
+        user_resource.add_cors_preflight(
+            allow_origins=apigw.Cors.ALL_ORIGINS,
+            allow_methods=apigw.Cors.ALL_METHODS
+        )
         get_users_api = apigw.LambdaIntegration(self.get_users_fn)
         user_resource.add_method('GET',  get_users_api)
         create_user_api = apigw.LambdaIntegration(self.create_user_fn)

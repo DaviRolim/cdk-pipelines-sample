@@ -24,7 +24,7 @@ def handler(event, context):
     res = create_user(user)
     print(res)
     headers = {
-      'Access-Control-Allow-Origin': '*', # Required for CORS support to work
+      'Access-Control-Allow-Origin': '*', # Required for CORS support to workx
       'Access-Control-Allow-Credentials': True, # Required for cookies, authorization headers with HTTPS
     }
     return {
