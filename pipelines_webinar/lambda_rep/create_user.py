@@ -23,9 +23,13 @@ def create_user(user):
     
 def handler(event, context):
     print(event)
-    body = json.loads(event['body'])
-    print(body['user'])
-    res = create_user(body['user'])
+    body = event['body']
+    if isinstance(body, str):
+        user = json.loads(body['user'])
+    else:
+        user = body['user']
+    print(user)
+    res = create_user(user)
     print(res)
     headers = {
       'Access-Control-Allow-Origin': '*', # Required for CORS support to workx
