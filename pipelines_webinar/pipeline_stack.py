@@ -3,6 +3,8 @@ from aws_cdk import aws_codepipeline as codepipeline
 from aws_cdk import aws_codepipeline_actions as cpactions
 from aws_cdk import pipelines
 
+from pipelines_webinar import constants
+
 from .webservice_stage import WebServiceStage
 
 
@@ -54,8 +56,15 @@ class PipelineStack(core.Stack):
         'SERVICE_URL': pipeline.stack_output(pre_prod_app.url_output),
         'TABLE_NAME': pipeline.stack_output(pre_prod_app.table_name)
       }))
-
-    pipeline.add_application_stage(WebServiceStage(self, 'Prod', is_test=False, env={
+    prod_stage = pipeline.add_application_stage(WebServiceStage(self, 'Prod', is_test=False, env={
       'account': APP_ACCOUNT,
       'region': 'us-east-2',
     }))
+    prod_stage.add_actions(pipelines.ShellScriptAction(
+      action_name='RemoveTestResources',
+      run_order=prod_stage.next_sequential_run_order(),
+      commands=[
+        f'aws cloudformation delete-stack --stack-name {constants.TEST_STACK_NAME}'
+      ]
+    ))
+
