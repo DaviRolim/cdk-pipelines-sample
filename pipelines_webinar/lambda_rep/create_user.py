@@ -25,10 +25,12 @@ def handler(event, context):
     print(event)
     body = event['body']
     if isinstance(body, str):
-        user = json.loads(body['user'])
-    else:
-        user = body['user']
-    print(user)
+        body = body.replace("'", "\"")
+        print(body)
+        body = json.loads(body)
+        
+    user = body.get('user')
+
     res = create_user(user)
     print(res)
     headers = {
