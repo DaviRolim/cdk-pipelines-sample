@@ -9,15 +9,18 @@ import aws_cdk.aws_dynamodb as dynamodb
 
 from utils import get_code
 
+
 class PipelinesWebinarStack(core.Stack):
 
-    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+    def __init__(self, scope: core.Construct, id: str, env: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
-        
+
         # Dynamo table
-        DYNAMO_TABLE_NAME = 'users'
+        DYNAMO_TABLE_NAME = 'users' if env=='prod' else 'users_test'
+        
         self.table = dynamodb.Table(self, 'dynamo_table', table_name=DYNAMO_TABLE_NAME,
-            partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING)
+            partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
+            removal_policy=core.RemovalPolicy.DESTROY
         )
             # stream=dynamodb.StreamViewType.NEW_IMAGE
 
@@ -80,5 +83,5 @@ class PipelinesWebinarStack(core.Stack):
             deployment_config=codedeploy.LambdaDeploymentConfig.LINEAR_10_PERCENT_EVERY_1_MINUTE,
             alarms=[failure_alarm])
 
-        self.url_output = core.CfnOutput(self, 'Url',
-            value=gw.url)
+        self.url_output = core.CfnOutput(self, 'Url', value=gw.url)
+        self.table_name = core.CfnOutput(self, 'DYNAMO_TABLE', value=self.table.table_name)

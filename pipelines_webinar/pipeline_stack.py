@@ -36,22 +36,23 @@ class PipelineStack(core.Stack):
         build_command='python -m unittest discover tests',
         synth_command='cdk synth'))
 
-    # pre_prod_app = WebServiceStage(self, 'Pre-Prod', env={
-    #   'account': APP_ACCOUNT,
-    #   'region': 'us-east-2',
-    # })
-    # pre_prod_stage = pipeline.add_application_stage(pre_prod_app)
-    # pre_prod_stage.add_actions(pipelines.ShellScriptAction(
-    #   action_name='Integ',
-    #   run_order=pre_prod_stage.next_sequential_run_order(),
-    #   additional_artifacts=[source_artifact],
-    #   commands=[
-    #     'pip install -r requirements.txt',
-    #     'pytest integtests',
-    #   ],
-    #   use_outputs={
-    #     'SERVICE_URL': pipeline.stack_output(pre_prod_app.url_output)
-    #   }))
+    pre_prod_app = WebServiceStage(self, 'Test', env={
+      'account': APP_ACCOUNT,
+      'region': 'us-east-2',
+    })
+    pre_prod_stage = pipeline.add_application_stage(pre_prod_app)
+    pre_prod_stage.add_actions(pipelines.ShellScriptAction(
+      action_name='IntegrationTest',
+      run_order=pre_prod_stage.next_sequential_run_order(),
+      additional_artifacts=[source_artifact],
+      commands=[
+        # 'pip install -r requirements.txt',
+        'pytest integtests',
+      ],
+      use_outputs={
+        'SERVICE_URL': pipeline.stack_output(pre_prod_app.url_output),
+        'TABLE_NAME': pipeline.stack_output(pre_prod_app.table_name)
+      }))
 
     pipeline.add_application_stage(WebServiceStage(self, 'Prod', env={
       'account': APP_ACCOUNT,
