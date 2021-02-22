@@ -62,6 +62,7 @@ class PipelineStack(core.Stack):
     }))
     prod_stage.add_actions(pipelines.ShellScriptAction(
       action_name='RemoveTestResources',
+      additional_artifacts=[source_artifact],
       run_order=prod_stage.next_sequential_run_order(),
       commands=[
         f'aws cloudformation delete-stack --stack-name {constants.TEST_STACK_NAME}'
