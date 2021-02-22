@@ -36,7 +36,7 @@ class PipelineStack(core.Stack):
         build_command='python -m unittest discover tests',
         synth_command='cdk synth'))
 
-    pre_prod_app = WebServiceStage(self, 'Test', env={
+    pre_prod_app = WebServiceStage(self, 'Test', is_test=True, env={
       'account': APP_ACCOUNT,
       'region': 'us-east-2',
     })
@@ -47,6 +47,7 @@ class PipelineStack(core.Stack):
       additional_artifacts=[source_artifact],
       commands=[
         # 'pip install -r requirements.txt',
+        'pip install pytest requests',
         'pytest integtests',
       ],
       use_outputs={
@@ -54,7 +55,7 @@ class PipelineStack(core.Stack):
         'TABLE_NAME': pipeline.stack_output(pre_prod_app.table_name)
       }))
 
-    pipeline.add_application_stage(WebServiceStage(self, 'Prod', env={
+    pipeline.add_application_stage(WebServiceStage(self, 'Prod', is_test=False, env={
       'account': APP_ACCOUNT,
       'region': 'us-east-2',
     }))

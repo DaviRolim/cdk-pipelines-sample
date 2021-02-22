@@ -12,11 +12,11 @@ from utils import get_code
 
 class PipelinesWebinarStack(core.Stack):
 
-    def __init__(self, scope: core.Construct, id: str, env: str, **kwargs) -> None:
+    def __init__(self, scope: core.Construct, id: str, is_test: bool, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         # Dynamo table
-        DYNAMO_TABLE_NAME = 'users' if env=='prod' else 'users_test'
+        DYNAMO_TABLE_NAME = 'users_test' if is_test else 'users'
         
         self.table = dynamodb.Table(self, 'dynamo_table', table_name=DYNAMO_TABLE_NAME,
             partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
