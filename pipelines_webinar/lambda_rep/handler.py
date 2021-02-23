@@ -8,7 +8,7 @@ def get_users():
     table = dynamodb.Table(os.environ['DYNAMOTABLE'])
 
     user = dict(
-            id='1',
+            id='increment',
             firstName='Davi',
             lastName='Holanda',
             email='davirolim94@gmail.com'
