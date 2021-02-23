@@ -16,7 +16,7 @@ def get_users():
 
     users = [user]
     try:
-    # is not a good practice to use scan but is just for testing purposes
+    # it is not a good practice to use scan but is just for testing purposes
         all_table = table.scan()
         users = all_table['Items']
     except Exception as e:

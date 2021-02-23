@@ -48,9 +48,9 @@ class PipelinesWebinarStack(core.Stack):
         self.table.grant_read_write_data(self.get_users_fn)
         self.table.grant_read_write_data(self.create_user_fn)
 
-        alias = lmb.Alias(self, 'HandlerAlias',
-            alias_name='Current',
-            version=self.get_users_fn.current_version)
+        # alias = lmb.Alias(self, 'HandlerAlias',
+        #     alias_name='Current',
+        #     version=self.get_users_fn.current_version)
 
         gw = apigw.RestApi(self, 'Gateway',
             description='Endpoint for a simple Lambda-powered web service')
@@ -78,10 +78,10 @@ class PipelinesWebinarStack(core.Stack):
             threshold=1,
             evaluation_periods=1)
 
-        codedeploy.LambdaDeploymentGroup(self, 'DeploymentGroup',
-            alias=alias,
-            deployment_config=codedeploy.LambdaDeploymentConfig.LINEAR_10_PERCENT_EVERY_1_MINUTE,
-            alarms=[failure_alarm])
+        # codedeploy.LambdaDeploymentGroup(self, 'DeploymentGroup',
+        #     alias=alias,
+        #     deployment_config=codedeploy.LambdaDeploymentConfig.LINEAR_10_PERCENT_EVERY_1_MINUTE,
+        #     alarms=[failure_alarm])
 
         self.url_output = core.CfnOutput(self, 'Url', value=gw.url)
         self.table_name = core.CfnOutput(self, 'DYNAMO_TABLE', value=self.table.table_name)
