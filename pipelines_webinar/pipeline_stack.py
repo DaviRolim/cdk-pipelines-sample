@@ -12,7 +12,7 @@ from .webservice_stage import WebServiceStage
 APP_ACCOUNT = '475414269301'
 
 class PipelineStack(core.Stack):
-  def __init__(self, scope: core.Construct, id: str, **kwargs):
+  def __init__(self, scope: core.Construct, id: str, delete_test_resources: bool=False, **kwargs):
     super().__init__(scope, id, **kwargs)
 
     source_artifact = codepipeline.Artifact()
@@ -39,7 +39,7 @@ class PipelineStack(core.Stack):
         build_command='python -m unittest discover tests',
         synth_command='cdk synth'))
 
-    pre_prod_app = WebServiceStage(self, 'Test', is_test=True, env={
+    pre_prod_app = WebServiceStage(self, constants.TEST_STAGE_NAME, is_test=True, env={
       'account': APP_ACCOUNT,
       'region': 'us-east-2',
     })
@@ -57,7 +57,7 @@ class PipelineStack(core.Stack):
         'SERVICE_URL': pipeline.stack_output(pre_prod_app.url_output),
         'TABLE_NAME': pipeline.stack_output(pre_prod_app.table_name)
       }))
-    prod_stage = pipeline.add_application_stage(WebServiceStage(self, 'Prod', is_test=False, env={
+    prod_stage = pipeline.add_application_stage(WebServiceStage(self, constants.PROD_STAGE_NAME, is_test=False, env={
       'account': APP_ACCOUNT,
       'region': 'us-east-2',
     }))
@@ -66,14 +66,15 @@ class PipelineStack(core.Stack):
       effect=iam.Effect.ALLOW,
       resources=['*']
     )
-    prod_stage.add_actions(pipelines.ShellScriptAction(
-      action_name='RemoveTestResources',
-      additional_artifacts=[source_artifact],
-      run_order=prod_stage.next_sequential_run_order(),
-      commands=[
-        f'aws cloudformation delete-stack --stack-name {constants.TEST_STACK_NAME}'
-      ],
-      role_policy_statements=[permission_delete_cf]
-    ))
+    if delete_test_resources:
+      prod_stage.add_actions(pipelines.ShellScriptAction(
+        action_name='RemoveTestResources',
+        additional_artifacts=[source_artifact],
+        run_order=prod_stage.next_sequential_run_order(),
+        commands=[
+          f'aws cloudformation delete-stack --stack-name {constants.TEST_STACK_NAME}'
+        ],
+        role_policy_statements=[permission_delete_cf]
+      ))
 
 

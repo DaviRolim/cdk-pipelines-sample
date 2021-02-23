@@ -8,6 +8,6 @@ from pipelines_webinar.pipelines_webinar_stack import PipelinesWebinarStack
 
 
 app = core.App()
-PipelineStack(app, "pipelines-webinar", env={'region': 'us-east-2'})
+PipelineStack(app, "pipelines-webinar", delete_test_resources=True, env={'region': 'us-east-2'})
 
 app.synth()
