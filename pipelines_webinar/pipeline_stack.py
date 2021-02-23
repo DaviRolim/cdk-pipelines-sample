@@ -2,6 +2,7 @@ from aws_cdk import core
 from aws_cdk import aws_codepipeline as codepipeline
 from aws_cdk import aws_codepipeline_actions as cpactions
 from aws_cdk import pipelines
+from aws_cdk import aws_iam as iam
 
 from pipelines_webinar import constants
 
@@ -60,12 +61,19 @@ class PipelineStack(core.Stack):
       'account': APP_ACCOUNT,
       'region': 'us-east-2',
     }))
+    permission_delete_cf = iam.PolicyStatement(
+      actions=['cloudformation:DeleteStack'],
+      effect=iam.Effect.ALLOW,
+      resources=['*']
+    )
     prod_stage.add_actions(pipelines.ShellScriptAction(
       action_name='RemoveTestResources',
       additional_artifacts=[source_artifact],
       run_order=prod_stage.next_sequential_run_order(),
       commands=[
         f'aws cloudformation delete-stack --stack-name {constants.TEST_STACK_NAME}'
-      ]
+      ],
+      role_policy_statements=[permission_delete_cf]
     ))
+
 
